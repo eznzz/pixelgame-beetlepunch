@@ -151,8 +151,40 @@ function drawItems(){for(const item of engine.items){const x=Math.round(item.x/2
   const im=images['assets/items/'+item.id+'.png'];if(item.id==='energy')drawEnergyCan(x-19,y-45);else if(im)ctx.drawImage(im,x-24,y-48,48,48);ctx.restore();}}
 function drawItemEffect(fx){ctx.save();ctx.globalAlpha=Math.max(0,1-fx.age/.65);const x=Math.round(fx.x),y=Math.round(fx.y-38*fx.age/.65);if(fx.kind==='energy'){pxText(ctx,'+15%',x-36,y,3,'#80d5ff');ctx.restore();return;}const color=fx.delta<0?'#ff7b76':fx.delta>0?'#a4df85':'#d8c4ad';
   if(fx.delta>=0){ctx.fillStyle=color;ctx.fillRect(x-15,y+9,15,3);ctx.fillRect(x-9,y+3,3,15);}else{ctx.fillStyle=color;ctx.fillRect(x-15,y+9,15,3);}pxText(ctx,String(Math.abs(fx.delta)),x+4,y,3,color);ctx.restore();}
+// Cosmetic glints: local coordinates on the original 276 x 106 Beetle sprite.
+// Separate random stream from the engine; no changes to collision or scoring.
+const carShinePoints=[[110,10],[151,17],[194,47],[224,56],[37,56]];
+let carShine=null,carShineNext=null,carShineLast=-1;
+function drawCarShine(layer){
+  if(!cfg.carShineEnabled)return;
+  const now=skyClock/1000;
+  const range=(a,b)=>a+Math.random()*(b-a);
+  if(carShineNext===null)carShineNext=now+range(cfg.carShineMinDelay,cfg.carShineMaxDelay);
+  if(carShine&&now>=carShine.end){carShine=null;carShineNext=now+range(cfg.carShineMinDelay,cfg.carShineMaxDelay);}
+  if(!carShine&&now>=carShineNext){
+    const choices=carShinePoints.map((_,i)=>i).filter(i=>i!==carShineLast);
+    carShineLast=choices[Math.floor(Math.random()*choices.length)];
+    carShine={start:now,end:now+range(cfg.carShineDurationMin,cfg.carShineDurationMax),point:carShinePoints[carShineLast]};
+  }
+  if(!carShine)return;
+  const t=Math.max(0,Math.min(1,(now-carShine.start)/(carShine.end-carShine.start)));
+  const strength=Math.sin(Math.PI*t);
+  const unit=Math.max(1,Math.round(2*cfg.carShineScale));
+  const arm=unit*Math.max(1,Math.round(5*strength));
+  const x=Math.round(layer.x+carShine.point[0]*layer.w/276),y=Math.round(layer.y+carShine.point[1]*layer.h/106);
+  ctx.save();
+  ctx.globalAlpha=.65*strength;ctx.fillStyle='#a9d9ff';
+  ctx.fillRect(x-arm,y-unit,arm*2+unit,unit*3);
+  ctx.fillRect(x-unit,y-arm,unit*3,arm*2+unit);
+  ctx.globalAlpha=.95*strength;ctx.fillStyle='#fff9eb';
+  ctx.fillRect(x-arm,y,arm*2+unit,unit);
+  ctx.fillRect(x,y-arm,unit,arm*2+unit);
+  ctx.fillRect(x-unit,y-unit,unit*3,unit*3);
+  if(strength>.7){ctx.globalAlpha=.45*strength;ctx.fillRect(x+arm+unit*2,y-arm,unit,unit);}
+  ctx.restore();
+}
 function render(){ctx.imageSmoothingEnabled=false;ctx.fillStyle='#111b2b';ctx.fillRect(0,0,cv.width,cv.height);const tick=Math.floor(skyClock/1000*12);if(tick!==skyTick){skyTick=tick;const g=skyFrame.getContext('2d');g.imageSmoothingEnabled=false;drawAnimatedSky(g,prepared.background,images[scene.skyAnimation.mask],cfg.retroMode,skyClock,{clouds:cfg.skyClouds});}
-  for(const key of scene.renderOrder){if(key==='characters'){if(engine.state==='menu'||engine.state==='help'||engine.state==='records'){for(const p of scene.previewActors)actor({...p,dir:p.flip?-1:1,age:skyClock/1000});}else{drawItems();for(const e of engine.enemies)actor(e);dashWind();actor(engine.hero);}continue;}if(key==='effects'){for(const fx of engine.effects)effect(fx);for(const fx of engine.vanishEffects)vanishEffect(fx);for(const fx of engine.itemEffects)drawItemEffect(fx);continue;}if(key==='hud'){if(mobile()&&['playing','ending'].includes(uiState())){ctx.save();ctx.beginPath();ctx.rect(0,0,scene.width,120);ctx.clip();drawHUD(ctx,engine.lives,engine.score);ctx.restore();}else drawHUD(ctx,engine.lives,engine.score);continue;}const l=scene.layers.find(x=>x.file.endsWith('/'+key+'.png'));ctx.drawImage(key==='background'?skyFrame:prepared[key],l.x,l.y);}
+  for(const key of scene.renderOrder){if(key==='characters'){if(engine.state==='menu'||engine.state==='help'||engine.state==='records'){for(const p of scene.previewActors)actor({...p,dir:p.flip?-1:1,age:skyClock/1000});}else{drawItems();for(const e of engine.enemies)actor(e);dashWind();actor(engine.hero);}continue;}if(key==='effects'){for(const fx of engine.effects)effect(fx);for(const fx of engine.vanishEffects)vanishEffect(fx);for(const fx of engine.itemEffects)drawItemEffect(fx);continue;}if(key==='hud'){if(mobile()&&['playing','ending'].includes(uiState())){ctx.save();ctx.beginPath();ctx.rect(0,0,scene.width,120);ctx.clip();drawHUD(ctx,engine.lives,engine.score);ctx.restore();}else drawHUD(ctx,engine.lives,engine.score);continue;}const l=scene.layers.find(x=>x.file.endsWith('/'+key+'.png'));ctx.drawImage(key==='background'?skyFrame:prepared[key],l.x,l.y);if(key==='beetle')drawCarShine(l);}
   drawEnergyHUD();drawOverlay();}
 function frame(now){if(!ready)return;const dt=last===null?0:Math.max(0,Math.min(.08,(now-last)/1000));last=now;if(!document.hidden&&(engine.state==='playing'||engine.state==='menu'||engine.state==='help'||engine.state==='records'))skyClock+=dt*1000;
   if(engine.state==='playing'){acc+=dt;while(acc>=cfg.fixedStep&&engine.state==='playing'){engine.step(cfg.fixedStep,{left:hasControl('ArrowLeft'),right:hasControl('ArrowRight'),punch:queuedPunch});queuedPunch=false;acc-=cfg.fixedStep;}saveBest();if(engine.state==='over'){audio.stop();audio.play(engine.score>runBest?'record':'over');}}
