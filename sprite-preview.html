@@ -64,7 +64,7 @@ function manualShine(){
 }
 document.getElementById('shine-now').onclick=manualShine;
 auto.onchange=()=>{if(auto.checked&&!carShine)carShineNext=null;};
-const descriptions={apple:['Яблоко','+1 жизнь'],banana:['Банан','+1 жизнь'],bottle:['Зелёная бутылка','−1 жизнь'],cigarettes:['Сигареты','−1 жизнь'],energy:['Энергетик','+'+Math.round(cfg.energySpeedBonus*100)+'% скорости / '+cfg.energyDuration+' сек.']};
+const descriptions={apple:['Яблоко','+1 жизнь'],banana:['Банан','+1 жизнь'],bottle:['Зелёная бутылка','−1 жизнь'],cigarettes:['Сигареты','−1 жизнь'],energy:['Банка энергетика','+'+Math.round(cfg.energySpeedBonus*100)+'% скорости / '+cfg.energyDuration+' сек.']};
 const drops=cfg.itemTypes.map(type=>{
  const el=document.createElement('article'),title=document.createElement('strong'),cv=document.createElement('canvas'),desc=document.createElement('p');
  title.textContent=descriptions[type.id][0];desc.textContent=descriptions[type.id][1];cv.width=48;cv.height=48;cv.setAttribute('aria-label',title.textContent);
