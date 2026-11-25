@@ -2,7 +2,8 @@
 class BeetleEngine {
   constructor(config,scene,sprites,rng=Math.random){this.c=config;this.scene=scene;this.sprites=sprites;this.rng=rng;this.reset();this.state='menu';}
   emit(name){if(this.onSound)this.onSound(name);}
-  reset(){this.state='playing';this.time=0;this.energyUntil=0;this.lives=this.c.lives;this.score=0;this.hero={id:'hero',x:this.c.heroStartX,dir:1,anim:'idle',age:0,attack:null,cooldown:0};this.enemies=[];this.effects=[];this.vanishEffects=[];this.items=[];this.itemEffects=[];this.spawnIn=this.c.spawnStart;this.lastSide=0;this.sideStreak=0;this.lastType=-1;this.nextId=1;this.lastDamage=-Infinity;}
+  reset(){this.state='playing';this.time=0;this.energyUntil=0;this.dashUntil=0;this.dashReady=0;this.dashDir=0;this.lastTap=null;this.lives=this.c.lives;this.score=0;this.hero={id:'hero',x:this.c.heroStartX,dir:1,anim:'idle',age:0,attack:null,cooldown:0};this.enemies=[];this.effects=[];this.vanishEffects=[];this.items=[];this.itemEffects=[];this.spawnIn=this.c.spawnStart;this.lastSide=0;this.sideStreak=0;this.lastType=-1;this.nextId=1;this.lastDamage=-Infinity;}
+  tapDirection(dir,now){if(this.state!=='playing'||(dir!==1&&dir!==-1))return false;const prev=this.lastTap;this.lastTap={dir,now};if(!prev||prev.dir!==dir||now-prev.now>this.c.dashWindow||now<prev.now||this.time+1e-8<this.dashReady||this.hero.attack)return false;this.lastTap=null;this.dashDir=dir;this.dashUntil=this.time+this.c.dashDuration;this.dashReady=this.time+this.c.dashCooldown;this.emit('dash');return true;}
   pause(){if(this.state==='playing')this.state='paused';}
   resume(){if(this.state==='paused')this.state='playing';}
   spawn(side,type){const r=this.rng;if(side===undefined){side=this.sideStreak>=2?-this.lastSide:(r()<.5?-1:1);}this.sideStreak=side===this.lastSide?this.sideStreak+1:1;this.lastSide=side;
@@ -42,11 +43,11 @@ class BeetleEngine {
     this.items=this.items.filter(item=>!item.remove);}
   get energyRemaining(){return Math.max(0,this.energyUntil-this.time);}
   get heroSpeed(){return this.c.heroSpeed*(this.energyRemaining>0?1+this.c.energySpeedBonus:1);}
-  step(dt,input={}){if(this.state!=='playing'||dt<=0)return;const c=this.c,h=this.hero;const oldX=h.x;const boostedTime=Math.min(dt,this.energyRemaining);const travel=c.heroSpeed*(dt+boostedTime*(c.energySpeedBonus||0));this.time+=dt;h.cooldown=Math.max(0,h.cooldown-dt);const move=Number(!!input.right)-Number(!!input.left);
-    if(!h.attack&&move)h.dir=move;
-    if(input.punch)this.startPunch();
+  step(dt,input={}){if(this.state!=='playing'||dt<=0)return;const c=this.c,h=this.hero;const oldX=h.x;const boostedTime=Math.min(dt,this.energyRemaining);const travel=c.heroSpeed*(dt+boostedTime*(c.energySpeedBonus||0));const dashTime=Math.min(dt,Math.max(0,this.dashUntil-this.time));const dashTravel=c.heroSpeed*(dashTime+Math.min(dashTime,boostedTime)*(c.energySpeedBonus||0))*c.dashMultiplier;this.time+=dt;h.cooldown=Math.max(0,h.cooldown-dt);const move=Number(!!input.right)-Number(!!input.left);
+    if(!h.attack&&(move||dashTime))h.dir=dashTime?this.dashDir:move;
+    if(input.punch){if(this.startPunch())this.dashUntil=this.time;}
     if(h.attack){h.attack.age+=dt;h.age=h.attack.age;const a=this.sprites.characters.hero.punch;const impact=this.sprites.effects.punch.heroImpactFrame/a.fps;if(h.attack.age+1e-8>=impact)this.impact();if(h.attack.age>=this.animationDuration('hero','punch')){h.attack=null;this.setAnim(h,'idle');}}
-    else{if(move)h.x=Math.max(c.heroPadding,Math.min(this.scene.width-c.heroPadding,h.x+move*travel));this.setAnim(h,move?'run':'idle');h.age+=dt;}
+    else{const normalTravel=travel-c.heroSpeed*(dashTime+Math.min(dashTime,boostedTime)*(c.energySpeedBonus||0));h.x=Math.max(c.heroPadding,Math.min(this.scene.width-c.heroPadding,h.x+move*normalTravel+this.dashDir*dashTravel));this.setAnim(h,move||dashTime?'run':'idle');h.age+=dt;}
     this.advanceItems(dt,oldX);if(this.state!=='playing')return;
     this.spawnIn-=dt;if(this.spawnIn<=0&&this.enemies.filter(e=>e.anim!=='hit').length<c.maxEnemies){this.spawn();this.spawnIn=Math.max(c.spawnMin,c.spawnInterval-this.time*c.spawnRamp)*(1+(this.rng()-.5)*2*c.spawnJitter);}
     for(const e of this.enemies){e.age+=dt;if(e.anim==='run'){const goal=e.side<0?c.touchLeft:c.touchRight;e.x+=e.dir*e.speed*dt;if((e.x-goal)*e.dir>=0){e.x=goal;this.setAnim(e,'touch');}}
