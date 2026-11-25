@@ -43,3 +43,11 @@ html,body,#stage,#stage *,#mobile-controls,#mobile-controls * {
 #fullscreen-toggle svg{display:block;width:100%;height:100%}#fullscreen-toggle[hidden]{display:none}#fullscreen-toggle[aria-pressed=true] .expand,#fullscreen-toggle[aria-pressed=false] .contract{display:none}#fullscreen-toggle:focus-visible{outline:2px dashed #ffda99;outline-offset:2px}
 #audio-toggle[hidden]+#fullscreen-toggle{right:max(8px,env(safe-area-inset-right))}
 :root:fullscreen,:root:-webkit-full-screen{background:#080d18}
+
+/* The full viewport is a single pointer target; child zones are semantic only. */
+#mobile-controls{display:block;position:fixed;inset:0;width:100%;height:100%;pointer-events:auto;z-index:3}
+#mobile-controls[hidden]{display:none}
+#mobile-controls button{position:absolute;top:0;height:100%;pointer-events:none}
+#mobile-controls button:nth-child(1){left:0;width:20%}
+#mobile-controls button:nth-child(2){left:20%;width:20%}
+#mobile-controls button:nth-child(3){left:40%;width:60%}
