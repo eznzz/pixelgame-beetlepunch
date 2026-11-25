@@ -1,7 +1,7 @@
 // Original procedural arcade effects. No external assets or network requests.
 const BEETLE_SOUNDS = Object.freeze({
  menu:[[520,780,.055,'triangle',.32],[780,1040,.045,'square',.18]],start:[[220,330,.12],[330,440,.12],[440,660,.18]],
- swing:[[420,85,.16,'noise',.62]],hit:[[190,65,.105,'punch',1]],
+ dash:[[900,220,.15,'noise',.38]],swing:[[420,85,.16,'noise',.62]],hit:[[190,65,.105,'punch',1]],
  defeat:[[150,48,.12,'fall-punch',1]],damage:[[260,65,.26,'sawtooth',.88],[130,45,.17,'noise',.58]],
  drop:[[440,880,.10,'triangle',.47],[880,1200,.08,'triangle',.28]],good:[[440,550,.09],[660,880,.12],[880,1320,.14,'triangle',.5]],
  bad:[[390,220,.13,'sawtooth',.6],[220,75,.18,'sawtooth',.5]],destroy:[[420,90,.21,'noise',.88],[110,35,.14,'sawtooth',.65]],
