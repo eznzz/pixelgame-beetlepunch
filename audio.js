@@ -1,7 +1,7 @@
 // Original procedural arcade effects. No external assets or network requests.
 const BEETLE_SOUNDS = Object.freeze({
  menu:[[520,780,.055,'triangle',.32],[780,1040,.045,'square',.18]],start:[[220,330,.12],[330,440,.12],[440,660,.18]],
- dash:[[900,220,.15,'noise',.38]],swing:[[420,85,.16,'noise',.62]],hit:[[190,65,.105,'punch',1]],
+ dash:[[780,75,.22,'swing-heavy',.80]],swing:[[420,85,.16,'noise',.62]],hit:[[190,65,.105,'punch',1]],
  defeat:[[150,48,.12,'fall-punch',1]],damage:[[260,65,.26,'sawtooth',.88],[130,45,.17,'noise',.58]],
  drop:[[440,880,.10,'triangle',.47],[880,1200,.08,'triangle',.28]],good:[[440,550,.09],[660,880,.12],[880,1320,.14,'triangle',.5]],
  bad:[[390,220,.13,'sawtooth',.6],[220,75,.18,'sawtooth',.5]],destroy:[[420,90,.21,'noise',.88],[110,35,.14,'sawtooth',.65]],
@@ -17,7 +17,7 @@ function chipVoice(phase, t, kind){
 }
 function pcm16(v){return Math.round(Math.max(-1,Math.min(1,v))*32767)/32767;}
 // Layered 16-bit-style effects: transient, body, harmonics and short tail.
-const SWING_PRESETS=Object.freeze({wide:[980,120,.28,'swing-wide',.86],heavy:[680,65,.30,'swing-heavy',.92],double:[1200,100,.32,'swing-double',.85]});
+const SWING_PRESETS=Object.freeze({wide:[980,120,.28,'swing-wide',.86],heavy:[680,65,.30,'swing-heavy',.92],dash:[780,75,.22,'swing-heavy',.80],double:[1200,100,.32,'swing-double',.85]});
 function makeSwing(ctx,preset){
  const [from,to,duration,type,volume]=SWING_PRESETS[preset]||SWING_PRESETS.heavy;
  const rate=ctx.sampleRate,n=Math.ceil(rate*duration),b=ctx.createBuffer(2,n,rate);let seed=9171;
@@ -72,6 +72,6 @@ class BeetleAudio {
   stopMusic(){if(this.musicSource){const source=this.musicSource;this.musicSource=null;try{source.stop();source.disconnect();}catch(e){}}}
   syncMusic(){if(!this.config.enabled||!this.enabled||!this.config.musicEnabled||!this.musicAllowed){this.stopMusic();return;}if(!this.ctx||this.ctx.state!=='running'||this.musicSource)return;try{this.musicBuffer ||= makeBeetleMusic(this.ctx);const source=this.ctx.createBufferSource();source.buffer=this.musicBuffer;source.loop=true;source.connect(this.musicGain);source.start();this.musicSource=source;}catch(e){}}
   stop(){for(const v of this.voices){try{v.stop();}catch(e){}}this.voices.clear();}
-  play(name){const ctx=this.ctx;if(!this.config.enabled||!this.enabled||!this.config.effectsEnabled||!ctx||ctx.state!=='running'||!BEETLE_SOUNDS[name])return;try{let t=ctx.currentTime+.005;for(const [from,to,duration,type='square',volume=.3] of (name==='swing'?[SWING_PRESETS[this.config.swingPreset]||SWING_PRESETS.heavy]:BEETLE_SOUNDS[name])){if(this.voices.size>=24)break;const source=ctx.createBufferSource();const key=[name,from,to,duration,type,volume,this.config.swingPreset].join(':');if(!this.effectBuffers.has(key))this.effectBuffers.set(key,name==='swing'?makeSwing(ctx,this.config.swingPreset):name==='hit'?makePunch(ctx):name==='defeat'?makeFallPunch(ctx):makeBeetleEffect(ctx,from,to,duration,type,volume));source.buffer=this.effectBuffers.get(key);const gain=ctx.createGain();gain.gain.setValueAtTime(.001,t);gain.gain.linearRampToValueAtTime(1,t+.005);gain.gain.exponentialRampToValueAtTime(.001,t+duration);source.connect(gain);gain.connect(this.master);this.voices.add(source);source.onended=()=>{this.voices.delete(source);source.disconnect();gain.disconnect();};source.start(t);source.stop(t+duration+.005);t+=duration;}}catch(e){}}
+  play(name){const ctx=this.ctx;if(!this.config.enabled||!this.enabled||!this.config.effectsEnabled||!ctx||ctx.state!=='running'||!BEETLE_SOUNDS[name])return;try{let t=ctx.currentTime+.005;for(const [from,to,duration,type='square',volume=.3] of (name==='swing'?[SWING_PRESETS[this.config.swingPreset]||SWING_PRESETS.heavy]:BEETLE_SOUNDS[name])){if(this.voices.size>=24)break;const source=ctx.createBufferSource();const key=[name,from,to,duration,type,volume,this.config.swingPreset].join(':');if(!this.effectBuffers.has(key))this.effectBuffers.set(key,name==='dash'?makeSwing(ctx,'dash'):name==='swing'?makeSwing(ctx,this.config.swingPreset):name==='hit'?makePunch(ctx):name==='defeat'?makeFallPunch(ctx):makeBeetleEffect(ctx,from,to,duration,type,volume));source.buffer=this.effectBuffers.get(key);const gain=ctx.createGain();gain.gain.setValueAtTime(.001,t);gain.gain.linearRampToValueAtTime(1,t+.005);gain.gain.exponentialRampToValueAtTime(.001,t+duration);source.connect(gain);gain.connect(this.master);this.voices.add(source);source.onended=()=>{this.voices.delete(source);source.disconnect();gain.disconnect();};source.start(t);source.stop(t+duration+.005);t+=duration;}}catch(e){}}
 }
 if(typeof module!=='undefined')module.exports={BeetleAudio,BEETLE_SOUNDS,makeBeetleMusic,makeBeetleEffect,makeSwing,makePunch,makeFallPunch,SWING_PRESETS};
