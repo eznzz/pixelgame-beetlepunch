@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const source=fs.readFileSync(__dirname+'/../game.js','utf8');
+const code=source.slice(source.indexOf('const carShinePoints='),source.indexOf('function render(){'));
+const calls=[];const ctx={save(){calls.push('save')},restore(){calls.push('restore')},fillRect(...r){calls.push(r)}};
+const cfg={carShineEnabled:true,carShineMinDelay:6,carShineMaxDelay:14,carShineDurationMin:.6,carShineDurationMax:1.1,carShineScale:1};
+const env=vm.createContext({cfg,ctx,skyClock:0,Math:Object.assign(Object.create(Math),{random:()=>.5}),layer:{x:699,y:643,w:276,h:106}});
+vm.runInContext(code,env);const draw=t=>{env.skyClock=t*1000;vm.runInContext('drawCarShine(layer)',env)};
+draw(0);draw(9);assert.equal(calls.length,0);draw(10);draw(10.4);assert(calls.some(Array.isArray));assert.equal(calls.filter(x=>x==='save').length,calls.filter(x=>x==='restore').length);
+calls.length=0;draw(11);assert.equal(calls.length,0);draw(20);assert.equal(calls.length,0);draw(21);draw(21.4);assert(calls.some(Array.isArray));
+calls.length=0;cfg.carShineEnabled=false;draw(21.5);assert.equal(calls.length,0);
+console.log('PASS: glint schedule, render, expiry, repeat, disabled');
