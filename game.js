@@ -165,11 +165,12 @@ function drawCarShine(layer){
   const now=skyClock/1000;
   const range=(a,b)=>a+Math.random()*(b-a);
   if(carShineNext===null)carShineNext=now+range(cfg.carShineMinDelay,cfg.carShineMaxDelay);
-  if(carShine&&now>=carShine.end){carShine=null;carShineNext=now+range(cfg.carShineMinDelay,cfg.carShineMaxDelay);}
+  if(carShine&&now>=carShine.end)carShine=null;
   if(!carShine&&now>=carShineNext){
     const choices=carShinePoints.map((_,i)=>i).filter(i=>i!==carShineLast);
     carShineLast=choices[Math.floor(Math.random()*choices.length)];
     carShine={start:now,end:now+range(cfg.carShineDurationMin,cfg.carShineDurationMax),point:carShinePoints[carShineLast]};
+    carShineNext=now+range(cfg.carShineMinDelay,cfg.carShineMaxDelay);
   }
   if(!carShine)return;
   const t=Math.max(0,Math.min(1,(now-carShine.start)/(carShine.end-carShine.start)));
