@@ -16,6 +16,8 @@ const GAME_CONFIG = Object.freeze({
     Object.freeze({id:'cigarettes',life:-1,weight:1}), Object.freeze({id:'banana',life:1,weight:1}),
     Object.freeze({id:'energy',life:0,weight:1})
   ]),
+  carShineEnabled:true, carShineMinDelay:6, carShineMaxDelay:14,
+  carShineDurationMin:0.6, carShineDurationMax:1.1, carShineScale:1,
   skyClouds:true, retroMode:'retro', fixedStep:1/120,
   storageKey:'stance-crimea.game-beetle.best.v1'
 });
