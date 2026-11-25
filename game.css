@@ -54,3 +54,12 @@ html,body,#stage,#stage *,#mobile-controls,#mobile-controls * {
 
 /* BEETLE 3: scrollable help page, independent of the game touch surface. */
 #help-screen{display:block;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:max(64px,calc(env(safe-area-inset-top) + 56px)) max(14px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));}#help-screen[hidden]{display:none}.help-panel{margin:0 auto;width:min(740px,100%);gap:16px}.help-panel h2{margin:10px 0 0;padding-top:12px;border-top:2px solid #66657e;color:#e7ba81;font-size:18px}.help-row{display:grid;grid-template-columns:48px minmax(0,1fr);align-items:center;gap:12px}.help-row>img,.help-row>svg,.help-row>canvas{width:40px;height:40px;object-fit:contain;image-rendering:pixelated;justify-self:center}.help-row>canvas{object-fit:contain;width:35px;height:40px}.help-panel p{min-width:0}.help-panel button{width:min(320px,100%)}
+
+/* Paginated help: one short card at a time, with scroll fallback for small landscape screens. */
+#help-screen{display:flex;align-items:center;justify-content:center;overflow-y:auto;}
+#help-screen[hidden],.help-card[hidden]{display:none!important}
+.help-panel{flex:none;width:min(620px,100%);max-height:100%;min-height:0;display:flex;flex-direction:column;gap:12px;padding:clamp(12px,3vw,24px);}
+#help-progress{text-align:center;color:#e7ba81;font:bold 16px monospace;flex:none;letter-spacing:2px}
+#help-cards{overflow-y:auto;min-height:0;flex:1 1 auto;touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:0 4px 4px;}
+.help-card{display:grid;gap:12px;align-content:start}.help-card h2{margin:0 0 4px;padding:8px 0;border-top:2px solid #66657e;text-align:center;}.help-bullet{position:relative;padding-left:18px}.help-bullet::before{content:'';position:absolute;left:2px;top:.65em;width:6px;height:6px;background:#e7ba81}.help-nav{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:none}.help-panel .help-nav button,.help-panel #help-back{width:100%;max-width:none;flex:none;min-height:44px}.help-nav button:disabled{opacity:.4;cursor:default}.help-panel h1{flex:none;}.help-panel #help-back{background:#26354f}
+@media(max-height:480px){#help-screen{align-items:flex-start;padding-top:max(56px,env(safe-area-inset-top));}.help-panel{gap:6px;padding:10px;}.help-card{gap:6px}.help-panel h1{--dot:2px}.help-panel h2{padding:4px 0}.help-panel .help-nav button,.help-panel #help-back{min-height:36px}}
