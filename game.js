@@ -121,16 +121,37 @@ function vanishEffect(fx){const t=Math.min(1,fx.age/cfg.vanishDuration),x=fx.x,y
     const px=snap(x+Math.cos(a)*dist),py=snap(y+Math.sin(a)*dist*.84-28*t);
     ctx.globalAlpha=Math.max(0,1-t)*(j%3===0?.8:1);ctx.fillStyle=['#e9edf5','#93b8d9','#536d9d'][j%3];ctx.fillRect(px,py,size,size);}
   if(t<.26){ctx.globalAlpha=(1-t/.26)*.8;ctx.fillStyle='#ecf3ff';ctx.fillRect(snap(x)-8,snap(y)-24,16,48);ctx.fillRect(snap(x)-24,snap(y)-8,48,16);}ctx.restore();}
+// Energy can: original pixel art, no external asset dependency.
+const energyPixels=[
+'...OOOOOOO...',
+'..OSSSSSSSO..',
+'..OHHHHHHHO..',
+'..OBBBBBBDO..',
+'..OLBBBBBDO..',
+'..OLBBYBBDO..',
+'..OLBYYBBDO..',
+'..OLYYYBBDO..',
+'..OLBYYBBDO..',
+'..OLBYBBBDO..',
+'..OLBBBBBDO..',
+'..OLBBBBBDO..',
+'..OBBBBBBDO..',
+'..OSSSSSSSO..',
+'...OOOOOOO...'
+];
+const energyPalette={O:'#10213c',S:'#a5b9cc',H:'#e3edf4',B:'#2168cf',D:'#17458d',L:'#58b8ff',Y:'#fff1a0'};
+function drawEnergyCan(x,y,scale=3){energyPixels.forEach((row,j)=>{for(let i=0;i<row.length;i++){const color=energyPalette[row[i]];if(color){ctx.fillStyle=color;ctx.fillRect(Math.round(x+i*scale),Math.round(y+j*scale),scale,scale);}}});}
+function drawEnergyHUD(){if(engine.state!=='playing'||engine.energyRemaining<=0)return;const x=Math.round(scene.width/2-110),y=103;ctx.save();ctx.fillStyle='rgba(8,13,24,.85)';ctx.fillRect(x,y,220,40);drawEnergyCan(x+8,y+4,2);pxText(ctx,'+15% '+Math.ceil(engine.energyRemaining)+'S',x+44,y+10,3,'#80d5ff');ctx.restore();}
 // Ground items use original 24x24 RGBA art on the gameplay plane.
 function drawItems(){for(const item of engine.items){const x=Math.round(item.x/2)*2,y=scene.groundY;ctx.save();
   if(item.age>cfg.itemLifetime-1&&Math.floor(item.age*8)%2===0)ctx.globalAlpha=.55;
   ctx.fillStyle='rgba(4,9,22,.55)';ctx.fillRect(x-18,y-3,36,5);
-  const im=images['assets/items/'+item.id+'.png'];if(im)ctx.drawImage(im,x-24,y-48,48,48);ctx.restore();}}
-function drawItemEffect(fx){ctx.save();ctx.globalAlpha=Math.max(0,1-fx.age/.65);const x=Math.round(fx.x),y=Math.round(fx.y-38*fx.age/.65);const color=fx.delta<0?'#ff7b76':fx.delta>0?'#a4df85':'#d8c4ad';
+  const im=images['assets/items/'+item.id+'.png'];if(item.id==='energy')drawEnergyCan(x-19,y-45);else if(im)ctx.drawImage(im,x-24,y-48,48,48);ctx.restore();}}
+function drawItemEffect(fx){ctx.save();ctx.globalAlpha=Math.max(0,1-fx.age/.65);const x=Math.round(fx.x),y=Math.round(fx.y-38*fx.age/.65);if(fx.kind==='energy'){pxText(ctx,'+15%',x-36,y,3,'#80d5ff');ctx.restore();return;}const color=fx.delta<0?'#ff7b76':fx.delta>0?'#a4df85':'#d8c4ad';
   if(fx.delta>=0){ctx.fillStyle=color;ctx.fillRect(x-15,y+9,15,3);ctx.fillRect(x-9,y+3,3,15);}else{ctx.fillStyle=color;ctx.fillRect(x-15,y+9,15,3);}pxText(ctx,String(Math.abs(fx.delta)),x+4,y,3,color);ctx.restore();}
 function render(){ctx.imageSmoothingEnabled=false;ctx.fillStyle='#111b2b';ctx.fillRect(0,0,cv.width,cv.height);const tick=Math.floor(skyClock/1000*12);if(tick!==skyTick){skyTick=tick;const g=skyFrame.getContext('2d');g.imageSmoothingEnabled=false;drawAnimatedSky(g,prepared.background,images[scene.skyAnimation.mask],cfg.retroMode,skyClock,{clouds:cfg.skyClouds});}
   for(const key of scene.renderOrder){if(key==='characters'){if(engine.state==='menu'||engine.state==='help'||engine.state==='records'){for(const p of scene.previewActors)actor({...p,dir:p.flip?-1:1,age:skyClock/1000});}else{drawItems();for(const e of engine.enemies)actor(e);actor(engine.hero);}continue;}if(key==='effects'){for(const fx of engine.effects)effect(fx);for(const fx of engine.vanishEffects)vanishEffect(fx);for(const fx of engine.itemEffects)drawItemEffect(fx);continue;}if(key==='hud'){if(mobile()&&['playing','ending'].includes(uiState())){ctx.save();ctx.beginPath();ctx.rect(0,0,scene.width,120);ctx.clip();drawHUD(ctx,engine.lives,engine.score);ctx.restore();}else drawHUD(ctx,engine.lives,engine.score);continue;}const l=scene.layers.find(x=>x.file.endsWith('/'+key+'.png'));ctx.drawImage(key==='background'?skyFrame:prepared[key],l.x,l.y);}
-  drawOverlay();}
+  drawEnergyHUD();drawOverlay();}
 function frame(now){if(!ready)return;const dt=last===null?0:Math.max(0,Math.min(.08,(now-last)/1000));last=now;if(!document.hidden&&(engine.state==='playing'||engine.state==='menu'||engine.state==='help'||engine.state==='records'))skyClock+=dt*1000;
   if(engine.state==='playing'){acc+=dt;while(acc>=cfg.fixedStep&&engine.state==='playing'){engine.step(cfg.fixedStep,{left:hasControl('ArrowLeft'),right:hasControl('ArrowRight'),punch:queuedPunch});queuedPunch=false;acc-=cfg.fixedStep;}saveBest();if(engine.state==='over'){audio.stop();audio.play(engine.score>runBest?'record':'over');}}
   if(lastLives!==engine.lives||lastScore!==engine.score){lastLives=engine.lives;lastScore=engine.score;if(engine.state==='playing')liveEl.textContent=`Жизни: ${lastLives}. Очки: ${lastScore}.`;}
