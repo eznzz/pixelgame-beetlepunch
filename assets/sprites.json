@@ -1,0 +1,578 @@
+{
+  "version": "2.0",
+  "frameWidth": 80,
+  "frameHeight": 64,
+  "anchor": {
+    "x": 40,
+    "y": 59
+  },
+  "facing": "right",
+  "mirrorLeft": true,
+  "characters": {
+    "hero": {
+      "idle": {
+        "image": "assets/characters/hero/idle.png",
+        "fps": 5,
+        "loop": true,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 240,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      },
+      "run": {
+        "image": "assets/characters/hero/run.png",
+        "fps": 12,
+        "loop": true,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 240,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 320,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 400,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      },
+      "punch": {
+        "image": "assets/characters/hero/punch.png",
+        "fps": 12,
+        "loop": false,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 240,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      }
+    },
+    "enemy-01": {
+      "run": {
+        "image": "assets/characters/enemy-01/run.png",
+        "fps": 12,
+        "loop": true,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 240,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 320,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 400,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      },
+      "touch": {
+        "image": "assets/characters/enemy-01/touch.png",
+        "fps": 10,
+        "loop": false,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 240,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      },
+      "hit": {
+        "image": "assets/characters/enemy-01/hit.png",
+        "fps": 10,
+        "loop": false,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      }
+    },
+    "enemy-02": {
+      "run": {
+        "image": "assets/characters/enemy-02/run.png",
+        "fps": 12,
+        "loop": true,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 240,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 320,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 400,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      },
+      "touch": {
+        "image": "assets/characters/enemy-02/touch.png",
+        "fps": 10,
+        "loop": false,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 240,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      },
+      "hit": {
+        "image": "assets/characters/enemy-02/hit.png",
+        "fps": 10,
+        "loop": false,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      }
+    },
+    "enemy-03": {
+      "run": {
+        "image": "assets/characters/enemy-03/run.png",
+        "fps": 12,
+        "loop": true,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 240,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 320,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 400,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      },
+      "touch": {
+        "image": "assets/characters/enemy-03/touch.png",
+        "fps": 10,
+        "loop": false,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 240,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      },
+      "hit": {
+        "image": "assets/characters/enemy-03/hit.png",
+        "fps": 10,
+        "loop": false,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      }
+    },
+    "enemy-04": {
+      "run": {
+        "image": "assets/characters/enemy-04/run.png",
+        "fps": 12,
+        "loop": true,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 240,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 320,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 400,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      },
+      "touch": {
+        "image": "assets/characters/enemy-04/touch.png",
+        "fps": 10,
+        "loop": false,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 240,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      },
+      "hit": {
+        "image": "assets/characters/enemy-04/hit.png",
+        "fps": 10,
+        "loop": false,
+        "frames": [
+          {
+            "x": 0,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 80,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          },
+          {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 64
+          }
+        ]
+      }
+    }
+  },
+  "effects": {
+    "punch": {
+      "image": "assets/effects/punch.png",
+      "fps": 18,
+      "loop": false,
+      "anchor": {
+        "x": 32,
+        "y": 32
+      },
+      "frames": [
+        {
+          "x": 0,
+          "y": 0,
+          "w": 64,
+          "h": 64
+        },
+        {
+          "x": 64,
+          "y": 0,
+          "w": 64,
+          "h": 64
+        },
+        {
+          "x": 128,
+          "y": 0,
+          "w": 64,
+          "h": 64
+        },
+        {
+          "x": 192,
+          "y": 0,
+          "w": 64,
+          "h": 64
+        },
+        {
+          "x": 256,
+          "y": 0,
+          "w": 64,
+          "h": 64
+        },
+        {
+          "x": 320,
+          "y": 0,
+          "w": 64,
+          "h": 64
+        }
+      ],
+      "trigger": "enemyDefeated",
+      "heroImpactFrame": 2,
+      "frameIndexBase": 0,
+      "durationMs": 333.333,
+      "notes": "Start when a confirmed finishing hit lands; draw above characters; do not trigger on misses."
+    }
+  }
+}

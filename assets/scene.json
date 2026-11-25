@@ -1,0 +1,208 @@
+{
+  "version": "2.8",
+  "width": 1664,
+  "height": 936,
+  "aspectRatio": "16:9",
+  "source": "a_detailed_pixel_art_16_9_night_scene_a_polished.png",
+  "groundY": 776,
+  "carCenterX": 832,
+  "proposedProtectionBounds": [
+    650,
+    1020
+  ],
+  "layers": [
+    {
+      "file": "assets/scene/background.png",
+      "x": 0,
+      "y": 0,
+      "w": 1664,
+      "h": 622
+    },
+    {
+      "file": "assets/scene/plaza.png",
+      "x": 0,
+      "y": 622,
+      "w": 1664,
+      "h": 314
+    },
+    {
+      "file": "assets/scene/shadow.png",
+      "x": 641,
+      "y": 751,
+      "w": 393,
+      "h": 30
+    },
+    {
+      "file": "assets/scene/barrier-rear.png",
+      "x": 674,
+      "y": 656,
+      "w": 325,
+      "h": 76
+    },
+    {
+      "file": "assets/scene/beetle.png",
+      "x": 699,
+      "y": 643,
+      "w": 276,
+      "h": 106
+    },
+    {
+      "file": "assets/scene/barrier-front.png",
+      "x": 642,
+      "y": 695,
+      "w": 392,
+      "h": 85
+    },
+    {
+      "file": "assets/scene/foreground.png",
+      "x": 0,
+      "y": 810,
+      "w": 1664,
+      "h": 126
+    }
+  ],
+  "renderOrder": [
+    "background",
+    "plaza",
+    "shadow",
+    "barrier-rear",
+    "beetle",
+    "barrier-front",
+    "characters",
+    "effects",
+    "foreground",
+    "hud"
+  ],
+  "previewActors": [
+    {
+      "id": "enemy-01",
+      "anim": "run",
+      "x": 135,
+      "flip": false
+    },
+    {
+      "id": "enemy-02",
+      "anim": "run",
+      "x": 345,
+      "flip": false
+    },
+    {
+      "id": "hero",
+      "anim": "idle",
+      "x": 558,
+      "flip": false
+    },
+    {
+      "id": "enemy-03",
+      "anim": "run",
+      "x": 1280,
+      "flip": true
+    },
+    {
+      "id": "enemy-04",
+      "anim": "run",
+      "x": 1515,
+      "flip": true
+    }
+  ],
+  "previewSpriteScale": 3,
+  "theme": "night",
+  "sourceCrop": [
+    4,
+    2,
+    1668,
+    938
+  ],
+  "lighting": {
+    "enabled": true,
+    "strength": 0.1,
+    "ambient": "#132344",
+    "lampColor": "#ffbd70",
+    "lampsX": [
+      320,
+      1344
+    ],
+    "lampRadius": 270,
+    "appliesTo": [
+      "characters",
+      "beetle",
+      "barrier-rear",
+      "barrier-front"
+    ],
+    "notes": "Runtime tint; no changes to approved sprite pixels."
+  },
+  "colorBalance": {
+    "background": {
+      "brightness": 88,
+      "contrast": 95,
+      "saturation": 85,
+      "warmReduction": 25
+    },
+    "characters": {
+      "brightness": 110,
+      "contrast": 120,
+      "saturation": 90,
+      "night": 10
+    },
+    "vehicle": {
+      "brightness": 108,
+      "contrast": 110,
+      "saturation": 112,
+      "night": 17
+    },
+    "legacyNight": 28,
+    "moonProtection": {
+      "x": 1248,
+      "y": 120,
+      "radius": 85
+    },
+    "backgroundContrastPivot": 52
+  },
+  "retroBackground": {
+    "default": "retro",
+    "appliesTo": [
+      "background",
+      "plaza",
+      "foreground"
+    ],
+    "modes": {
+      "normal": {
+        "block": 1
+      },
+      "retro": {
+        "block": 4,
+        "palettePerLayer": 64
+      },
+      "arcade": {
+        "block": 8,
+        "palettePerLayer": 32
+      }
+    }
+  },
+  "backgroundExhibits": {
+    "enabled": true,
+    "file": "assets/scene/background-exhibits.png",
+    "x": 0,
+    "y": 528,
+    "appliesTo": [
+      "background",
+      "plaza"
+    ],
+    "interactive": false,
+    "collision": false,
+    "models": [
+      "Moskvich-412",
+      "VAZ-2103"
+    ],
+    "notes": "Static background decoration; base texture at approved v2.3 tone and 2 px grid. Merge after retro processing."
+  },
+  "skyAnimation": {
+    "clouds": true,
+    "meteors": false,
+    "mask": "assets/scene/sky-masks.png",
+    "module": "assets/scene/sky-animation.js",
+    "fps": 12,
+    "cloudCount": 5,
+    "notes": "Cloud motion only; meteors removed by user request. Original PNGs unchanged."
+  }
+}

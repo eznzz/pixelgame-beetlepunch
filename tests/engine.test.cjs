@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict');const fs=require('node:fs');const vm=require('node:vm');const BeetleEngine=require('../engine.js');
+const c=vm.runInNewContext(fs.readFileSync(__dirname+'/../config.js','utf8')+'\nGAME_CONFIG');const scene=require('../assets/scene.json'),sprites=require('../assets/sprites.json');
+const fresh=()=>{let g=new BeetleEngine(c,scene,sprites,()=>.3);g.reset();g.spawnIn=999;return g;};
+const step=(g,seconds,inp={})=>{for(let t=0;t<Math.round(seconds*120);t++)g.step(1/120,inp);};
+const enemy=(g,side,x,type=0)=>{const e=g.spawn(side,type);e.x=x;return e;};
+let g=fresh();step(g,.5,{right:true});assert(Math.abs(g.hero.x-(scene.width/2+c.heroSpeed*0.5))<1e-8);step(g,.5,{left:true});assert.equal(Math.round(g.hero.x),832);assert.equal(g.hero.dir,-1);step(g,10,{left:true});assert.equal(g.hero.x,c.heroPadding);step(g,10,{right:true});assert.equal(g.hero.x,scene.width-c.heroPadding);
+for(const side of [-1,1])for(let type=0;type<4;type++){g=fresh();g.hero.dir=side;g.hero.x=side<0?600:1064;let e=enemy(g,side,g.hero.x+side*90,type);e.speed=0;g.step(1/120,{punch:true});step(g,.12);assert.equal(g.score,0);step(g,.06);assert.equal(g.score,100);assert.equal(e.anim,'hit');assert.equal(g.effects.length,1);step(g,.6);assert.equal(g.effects.length,0);assert.equal(g.enemies.length,0);assert.equal(g.score,100);}
+g=fresh();g.hero.dir=1;g.hero.x=600;let e=enemy(g,-1,510);e.speed=0;g.step(1/120,{punch:true});step(g,.4);assert.equal(g.score,0);assert.equal(g.effects.length,0);assert.equal(e.anim,'run');
+g=fresh();g.hero.dir=1;g.hero.x=1064;let e1=enemy(g,1,1152),e2=enemy(g,1,1167);e1.speed=e2.speed=0;g.step(1/120,{punch:true});step(g,.2);assert.equal(g.score,100);assert.equal(g.enemies.filter(e=>e.anim==='hit').length,1);
+g=fresh();for(let i=0;i<5;i++){const side=i%2?1:-1;let e=enemy(g,side,side===1?c.touchRight:c.touchLeft,i%4);step(g,.1);assert.equal(g.lives,5-i);step(g,.35);assert.equal(g.lives,4-i);}assert.equal(g.state,'over');let t=g.time;step(g,2,{left:true,punch:true});assert.equal(g.time,t);g.reset();assert.equal(g.lives,5);assert.equal(g.score,0);assert.equal(g.enemies.length,0);assert.equal(g.state,'playing');
+g=fresh();g.pause();const x=g.hero.x;step(g,3,{left:true,punch:true});assert.equal(g.hero.x,x);assert.equal(g.time,0);g.resume();step(g,.2,{left:true});assert(g.hero.x<x);
+g=fresh();g.spawnIn=0;step(g,10);assert(g.nextId>4);assert(g.enemies.every(e=>e.id.startsWith('enemy-')));assert.equal(scene.skyAnimation.meteors,false);
+console.log('PASS: movement, edges, both directions × 4 enemy types, exact impact timing, miss, single target, PUNCH expiry, life loss once per touch, game over, restart, pause, spawn, meteor flag.');
