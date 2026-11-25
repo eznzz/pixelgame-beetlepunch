@@ -7,11 +7,13 @@ const GAME_CONFIG = Object.freeze({
   punchCooldown:0.35, punchRange:118, punchBackTolerance:10,
   touchFrame:2, hitKnockback:95, heroStartX:832, heroPadding:48,
   spawnPadding:65, touchLeft:665, touchRight:1009,
-  // Chance per enemy defeated by a punch. Four items have equal weights by default.
+  // Chance per enemy defeated by a punch. Five items have equal weights by default.
   itemDropChance:0.10, itemLifetime:5, itemPickupRadius:30,
+  energyDuration:15, energySpeedBonus:0.15,
   itemTypes:Object.freeze([
     Object.freeze({id:'bottle',life:-1,weight:1}), Object.freeze({id:'apple',life:1,weight:1}),
-    Object.freeze({id:'cigarettes',life:-1,weight:1}), Object.freeze({id:'banana',life:1,weight:1})
+    Object.freeze({id:'cigarettes',life:-1,weight:1}), Object.freeze({id:'banana',life:1,weight:1}),
+    Object.freeze({id:'energy',life:0,weight:1})
   ]),
   skyClouds:true, retroMode:'retro', fixedStep:1/120,
   storageKey:'stance-crimea.game-beetle.best.v1'

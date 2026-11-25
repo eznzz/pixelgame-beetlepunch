@@ -2,7 +2,7 @@
 class BeetleEngine {
   constructor(config,scene,sprites,rng=Math.random){this.c=config;this.scene=scene;this.sprites=sprites;this.rng=rng;this.reset();this.state='menu';}
   emit(name){if(this.onSound)this.onSound(name);}
-  reset(){this.state='playing';this.time=0;this.lives=this.c.lives;this.score=0;this.hero={id:'hero',x:this.c.heroStartX,dir:1,anim:'idle',age:0,attack:null,cooldown:0};this.enemies=[];this.effects=[];this.vanishEffects=[];this.items=[];this.itemEffects=[];this.spawnIn=this.c.spawnStart;this.lastSide=0;this.sideStreak=0;this.lastType=-1;this.nextId=1;this.lastDamage=-Infinity;}
+  reset(){this.state='playing';this.time=0;this.energyUntil=0;this.lives=this.c.lives;this.score=0;this.hero={id:'hero',x:this.c.heroStartX,dir:1,anim:'idle',age:0,attack:null,cooldown:0};this.enemies=[];this.effects=[];this.vanishEffects=[];this.items=[];this.itemEffects=[];this.spawnIn=this.c.spawnStart;this.lastSide=0;this.sideStreak=0;this.lastType=-1;this.nextId=1;this.lastDamage=-Infinity;}
   pause(){if(this.state==='playing')this.state='paused';}
   resume(){if(this.state==='paused')this.state='playing';}
   spawn(side,type){const r=this.rng;if(side===undefined){side=this.sideStreak>=2?-this.lastSide:(r()<.5?-1:1);}this.sideStreak=side===this.lastSide?this.sideStreak+1:1;this.lastSide=side;
@@ -34,16 +34,19 @@ class BeetleEngine {
       if(h.attack&&!h.attack.resolved){const d=(item.x-h.x)*h.attack.dir;if(d>=-c.punchBackTolerance&&d<=c.punchRange)continue;}
       const nearest=Math.max(Math.min(oldX,h.x),Math.min(Math.max(oldX,h.x),item.x));
       if(Math.abs(item.x-nearest)>c.itemPickupRadius)continue;
+      if(item.id==='energy'){this.energyUntil=this.time+c.energyDuration;item.remove=true;this.itemEffects.push({x:item.x,y:this.scene.groundY-55,kind:'energy',age:0});this.emit('good');continue;}
       const previous=this.lives;this.lives=Math.max(0,Math.min(c.lives,this.lives+item.life));item.remove=true;
       this.itemEffects.push({x:item.x,y:this.scene.groundY-55,delta:this.lives-previous,age:0});
       this.emit(item.life<0?'bad':'good');if(item.life<0)this.lastDamage=this.time;
       if(!this.lives){this.state='over';break;}}
     this.items=this.items.filter(item=>!item.remove);}
-  step(dt,input={}){if(this.state!=='playing'||dt<=0)return;const c=this.c,h=this.hero;const oldX=h.x;this.time+=dt;h.cooldown=Math.max(0,h.cooldown-dt);const move=Number(!!input.right)-Number(!!input.left);
+  get energyRemaining(){return Math.max(0,this.energyUntil-this.time);}
+  get heroSpeed(){return this.c.heroSpeed*(this.energyRemaining>0?1+this.c.energySpeedBonus:1);}
+  step(dt,input={}){if(this.state!=='playing'||dt<=0)return;const c=this.c,h=this.hero;const oldX=h.x;const boostedTime=Math.min(dt,this.energyRemaining);const travel=c.heroSpeed*(dt+boostedTime*(c.energySpeedBonus||0));this.time+=dt;h.cooldown=Math.max(0,h.cooldown-dt);const move=Number(!!input.right)-Number(!!input.left);
     if(!h.attack&&move)h.dir=move;
     if(input.punch)this.startPunch();
     if(h.attack){h.attack.age+=dt;h.age=h.attack.age;const a=this.sprites.characters.hero.punch;const impact=this.sprites.effects.punch.heroImpactFrame/a.fps;if(h.attack.age+1e-8>=impact)this.impact();if(h.attack.age>=this.animationDuration('hero','punch')){h.attack=null;this.setAnim(h,'idle');}}
-    else{if(move)h.x=Math.max(c.heroPadding,Math.min(this.scene.width-c.heroPadding,h.x+move*c.heroSpeed*dt));this.setAnim(h,move?'run':'idle');h.age+=dt;}
+    else{if(move)h.x=Math.max(c.heroPadding,Math.min(this.scene.width-c.heroPadding,h.x+move*travel));this.setAnim(h,move?'run':'idle');h.age+=dt;}
     this.advanceItems(dt,oldX);if(this.state!=='playing')return;
     this.spawnIn-=dt;if(this.spawnIn<=0&&this.enemies.filter(e=>e.anim!=='hit').length<c.maxEnemies){this.spawn();this.spawnIn=Math.max(c.spawnMin,c.spawnInterval-this.time*c.spawnRamp)*(1+(this.rng()-.5)*2*c.spawnJitter);}
     for(const e of this.enemies){e.age+=dt;if(e.anim==='run'){const goal=e.side<0?c.touchLeft:c.touchRight;e.x+=e.dir*e.speed*dt;if((e.x-goal)*e.dir>=0){e.x=goal;this.setAnim(e,'touch');}}
