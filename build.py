@@ -9,5 +9,8 @@ sources={p:'data:image/png;base64,'+base64.b64encode((root/p).read_bytes()).deco
 (root/'game-data.js').write_text('const GAME_DATA = '+json.dumps(dict(scene=scene,sprites=sprites,sources=sources),ensure_ascii=False,separators=(',',':'))+';\n',encoding='utf-8')
 html=(root/'index.html').read_text();html=html.replace('<link rel="stylesheet" href="game.css">','<style>'+(root/'game.css').read_text().replace('assets/scene/loading-background.webp','data:image/webp;base64,'+base64.b64encode((root/'assets/scene/loading-background.webp').read_bytes()).decode())+'</style>');html=re.sub(r'<script src="([^"]+)"></script>',lambda m:'<script>\n'+(root/m[1]).read_text()+'\n</script>',html)
 html=re.sub(r'(<img src=")(assets/hud/mobile/[^"]+)(")',lambda m:m[1]+'data:image/png;base64,'+base64.b64encode((root/m[2]).read_bytes()).decode()+m[3],html)
-html=html.replace('href="assets/favicon.png"','href="data:image/png;base64,'+base64.b64encode((root/'assets/favicon.png').read_bytes()).decode()+'"')
+# Embed versioned browser and Home Screen icons for the standalone HTML.
+html=re.sub(r'href="assets/favicon\.png(?:\?[^"]*)?"','href="data:image/png;base64,'+base64.b64encode((root/'assets/favicon.png').read_bytes()).decode()+'"',html)
+html=re.sub(r'href="apple-touch-icon\.png(?:\?[^"]*)?"','href="data:image/png;base64,'+base64.b64encode((root/'apple-touch-icon.png').read_bytes()).decode()+'"',html)
+html=re.sub(r'<link rel="manifest"[^>]*>','',html)
 (root/'beetle-brawl-v0.1.14-play.html').write_text(html,encoding='utf-8');print('Embedded',len(files),'PNG resources.')
