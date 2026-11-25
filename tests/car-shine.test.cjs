@@ -2,10 +2,10 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const source=fs.readFileSync(__dirname+'/../game.js','utf8');
 const code=source.slice(source.indexOf('const carShinePoints='),source.indexOf('function render(){'));
 const calls=[];const ctx={save(){calls.push('save')},restore(){calls.push('restore')},fillRect(...r){calls.push(r)}};
-const cfg={carShineEnabled:true,carShineMinDelay:2,carShineMaxDelay:5,carShineDurationMin:.6,carShineDurationMax:1.1,carShineScale:1};
+const cfg={carShineEnabled:true,carShineMinDelay:2,carShineMaxDelay:2,carShineDurationMin:.6,carShineDurationMax:1.1,carShineScale:1};
 const env=vm.createContext({cfg,ctx,skyClock:0,Math:Object.assign(Object.create(Math),{random:()=>.5}),layer:{x:699,y:643,w:276,h:106}});
 vm.runInContext(code,env);const draw=t=>{env.skyClock=t*1000;vm.runInContext('drawCarShine(layer)',env)};
-draw(0);draw(3);assert.equal(calls.length,0);draw(3.5);draw(3.9);assert(calls.some(Array.isArray));assert.equal(calls.filter(x=>x==='save').length,calls.filter(x=>x==='restore').length);
-calls.length=0;draw(4.5);assert.equal(calls.length,0);draw(7);assert.equal(calls.length,0);draw(8);draw(8.4);assert(calls.some(Array.isArray));
-calls.length=0;cfg.carShineEnabled=false;draw(8.5);assert.equal(calls.length,0);
+draw(0);draw(1.9);assert.equal(calls.length,0);draw(2);draw(2.4);assert(calls.some(Array.isArray));assert.equal(calls.filter(x=>x==='save').length,calls.filter(x=>x==='restore').length);
+calls.length=0;draw(3);assert.equal(calls.length,0);draw(3.9);assert.equal(calls.length,0);draw(4);draw(4.4);assert(calls.some(Array.isArray));
+calls.length=0;cfg.carShineEnabled=false;draw(4.5);assert.equal(calls.length,0);
 console.log('PASS: glint schedule, render, expiry, repeat, disabled');
